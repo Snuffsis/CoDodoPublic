@@ -1,4 +1,4 @@
-using CoDodoApi.Database;
+﻿using CoDodoApi.Database;
 using CoDodoApi.OpenApi;
 using CoDodoApi.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -78,6 +78,22 @@ public static class ServiceExtensions
         return services;
     }
 
+    public static IServiceCollection AddDatabase(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        string? connectionString = configuration.GetConnectionString("Database");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new ArgumentException("Database connection string is missing", nameof(configuration));
+        }
+
+        services.AddDbContext<ApplicationDbContext>(
+            (sp, options) => options
+                .UseNpgsql(connectionString)
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors()
+                .UseSnakeCaseNamingConvention());
 
         return services;
     }

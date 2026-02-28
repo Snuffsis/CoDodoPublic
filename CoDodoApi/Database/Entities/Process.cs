@@ -1,29 +1,55 @@
-﻿using System.Text;
+﻿using CoDodoApi.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 
-namespace CoDodoApi.Entities;
+namespace CoDodoApi.Database.Entities;
 
-public sealed class Process
+public class Process
 {
-    public string Name { get; set; } = "";
-    public Opportunity Opportunity { get; set; }
-    public string Status { get; set; } = "";
-    public DateTimeOffset CreatedDate { get; set; }
-    public DateTimeOffset UpdatedDate { get; set; }
-    public TimeProvider TimeProvider { get; set; }
-
-    public Process(string name,
+    private Process(string name,
                    Opportunity opportunity,
+                   string opportunityUri,
                    string status,
-                   DateTimeOffset createdDate,
-                   DateTimeOffset updatedDate,
-                   TimeProvider provider)
+                   DateTime createdDate,
+                   DateTime updatedDate)
     {
         Name = name;
         Opportunity = opportunity;
+        OpportunityUri = opportunityUri;
         Status = status;
         CreatedDate = createdDate;
         UpdatedDate = updatedDate;
-        TimeProvider = provider;
+    }
+    
+    public Process()
+    {
+    }
+    
+    public string Name { get; set; } = "";
+    public string OpportunityUri { get; set; } = "";
+    public Opportunity Opportunity { get; set; } = null!;
+    public string Status { get; set; } = "";
+    public DateTime CreatedDate { get; set; }
+    public DateTime UpdatedDate { get; set; }
+    [NotMapped]
+    public TimeProvider TimeProvider { get; set; }
+
+    public static Process Create(
+        string name,
+        Opportunity opportunity,
+        string opportunityUri,
+        string status,
+        DateTime createdDate, 
+        DateTime updatedDate)
+    {
+        var process = new Process(
+            name,
+            opportunity,
+            opportunityUri,
+            status,
+            createdDate,
+            updatedDate);
+        return process;
     }
 
     public int DaysSinceUpdate()
@@ -38,15 +64,6 @@ public sealed class Process
         TimeSpan diff = TimeProvider.GetUtcNow() - CreatedDate;
 
         return NumberOfWholeDays(diff);
-    }
-
-    internal string Key()
-    {
-        string t = Name + Opportunity.UriForAssignment;
-
-        byte[] b = Encoding.UTF8.GetBytes(t);
-
-        return Convert.ToBase64String(b);
     }
 
     static int NumberOfWholeDays(TimeSpan diff)
