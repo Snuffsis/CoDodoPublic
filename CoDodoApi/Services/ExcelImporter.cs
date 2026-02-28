@@ -1,17 +1,20 @@
 ﻿using ClosedXML.Excel;
+using CoDodoApi.Database;
+using CoDodoApi.Database.Entities;
 using CoDodoApi.Entities;
+using System.Globalization;
 
 namespace CoDodoApi.Services;
 
-public record ExcelImporter(ProcessInMemoryStore Store,
+public record ExcelImporter(ApplicationDbContext DbContext,
                             TimeProvider Provider,
                             ILogger<ExcelImporter> Logger)
 {
-    readonly ProcessInMemoryStore store = Store;
+    readonly ApplicationDbContext _dbContext = DbContext;
     readonly TimeProvider timeProvider = Provider;
     readonly ILogger logger = Logger;
 
-    public void Import(IFormFile file)
+    public async Task Import(IFormFile file)
     {
         try
         {
@@ -27,13 +30,24 @@ public record ExcelImporter(ProcessInMemoryStore Store,
                 .Skip(1)
                 .TakeWhile(x => !x.Cell(1).IsEmpty())
                 .Select(RowToProcess);
+            
+            _dbContext.Processes.AddRange(processes);
 
-            _ = processes.Select(store.Add).ToArray();
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Exception in {nameof(ExcelImporter)}");
+            }
+
         }
         catch (Exception ex)
         {
             logger.LogError(ex, $"Exception in {nameof(ExcelImporter)}");
-            throw ex;
+            throw;
         }
     }
 
@@ -57,24 +71,24 @@ public record ExcelImporter(ProcessInMemoryStore Store,
         string lu = LASTUPDATE.GetValue<string>();
         string gd = GENERATIONDATE.GetValue<string>();
 
-        DateTime LastUpdate = DateTime.Parse(lu);
-        DateTime generationDate = DateTime.Parse(gd);
+        DateTime LastUpdate = DateTime.SpecifyKind(DateTime.Parse(lu), DateTimeKind.Utc);
+        DateTime generationDate = DateTime.SpecifyKind(DateTime.Parse(gd), DateTimeKind.Utc);
 
         string uri = Guid.NewGuid().ToString();
 
-        Opportunity opportunity = new(
+        Opportunity opportunity = Opportunity.Create(
             uri,
             company,
             capability,
             salesLead,
             hourlyRate);
 
-        return new(
+        return Process.Create(
             name,
             opportunity,
+            opportunity.UriForAssignment,
             status,
             generationDate,
-            LastUpdate,
-            timeProvider);
+            LastUpdate);
     }
 }

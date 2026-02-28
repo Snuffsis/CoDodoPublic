@@ -1,4 +1,6 @@
-﻿namespace CoDodoApi.Entities;
+﻿using CoDodoApi.Database.Entities;
+
+namespace CoDodoApi.Entities;
 
 public sealed
 class ProcessDTO
@@ -10,8 +12,8 @@ class ProcessDTO
                       string status,
                       string nameOfSalesLead,
                       int hourlyRateInSEK,
-                      DateTimeOffset updatedDate,
-                      DateTimeOffset createdDate,
+                      DateTime updatedDate,
+                      DateTime createdDate,
                       int daysSinceUpdate,
                       int daysSinceCreation)
     {
@@ -34,8 +36,8 @@ class ProcessDTO
     public string Status { get; set; } = "";
     public string NameOfSalesLead { get; set; } = ""; // Sales Lead
     public int HourlyRateInSEK { get; set; } // Hourly Rate
-    public DateTimeOffset UpdatedDate { get; set; }  // Last Update
-    public DateTimeOffset CreatedDate { get; set; } // Generation Date
+    public DateTime UpdatedDate { get; set; }  // Last Update
+    public DateTime CreatedDate { get; set; } // Generation Date
     public int DaysSinceUpdate { get; set; }// Freshness
     public int DaysSinceCreation { get; set; } // Age
 }
@@ -45,17 +47,19 @@ public static class ProcessDtoExtensions
     public static Process ToProcess(this ProcessDTO dto, TimeProvider provider)
     {
         Opportunity o =
-            new(dto.UriForAssignment,
+            Opportunity.Create(
+                dto.UriForAssignment,
                 dto.Company,
                 dto.Capability,
                 dto.NameOfSalesLead,
                 dto.HourlyRateInSEK);
-
-        return new Process(dto.Name,
-                           o,
-                           dto.Status,
-                           dto.CreatedDate,
-                           dto.UpdatedDate,
-                           provider);
+        
+        return Process.Create(
+            dto.Name,
+            o,
+            o.UriForAssignment,
+            dto.Status,
+            dto.CreatedDate,
+            dto.UpdatedDate);
     }
 }

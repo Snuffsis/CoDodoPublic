@@ -1,4 +1,6 @@
-﻿namespace CoDodoApi.Entities;
+﻿using CoDodoApi.Database.Entities;
+
+namespace CoDodoApi.Entities;
 
 public sealed
 class CreateProcessDTO
@@ -17,19 +19,21 @@ class CreateProcessDTO
 public static class CreateProcessDtoExtensions
 {
     public static
-    Process ToProcess(this CreateProcessDTO dto, TimeProvider provider)
+    Process ToProcess(this CreateProcessDTO dto)
     {
-        Opportunity o = new(dto.UriForAssignment,
-                                     dto.Company,
-                                     dto.Capability,
-                                     dto.NameOfSalesLead,
-                                     dto.HourlyRateInSEK);
+        Opportunity o = Opportunity.Create(
+            dto.UriForAssignment,
+            dto.Company,
+            dto.Capability,
+            dto.NameOfSalesLead,
+            dto.HourlyRateInSEK);
 
-        return new Process(dto.Name,
-                           o,
-                           dto.Status,
-                           provider.GetUtcNow(),
-                           provider.GetUtcNow(),
-                           provider);
+        return Process.Create(
+            dto.Name,
+            o,
+            o.UriForAssignment,
+            dto.Status,
+            DateTime.UtcNow,
+            DateTime.UtcNow);
     }
 }

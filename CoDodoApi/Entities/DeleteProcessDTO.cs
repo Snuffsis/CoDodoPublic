@@ -1,4 +1,6 @@
-﻿namespace CoDodoApi.Entities;
+﻿using CoDodoApi.Database.Entities;
+
+namespace CoDodoApi.Entities;
 
 public sealed class DeleteProcessDTO
 {
@@ -9,15 +11,21 @@ public sealed class DeleteProcessDTO
 public static class DeleteProcessDtoExtensions
 {
     public static 
-    Process ToProcess(this DeleteProcessDTO dto, TimeProvider provider)
+    Process ToProcess(this DeleteProcessDTO dto)
     {
-        Opportunity details = new("", "", "", "", 0);
+        Opportunity details = Opportunity.Create(
+            "",
+            "",
+            "",
+            "",
+            0);
 
-        return new Process(dto.Name,
-                           details,
-                           "",
-                           provider.GetUtcNow(),
-                           provider.GetUtcNow(),
-                           provider);
+        return Process.Create(
+            dto.Name, 
+            details, 
+            details.UriForAssignment,
+            "",
+            DateTime.UtcNow,
+            DateTime.UtcNow);
     }
 }

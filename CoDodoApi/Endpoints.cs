@@ -1,6 +1,9 @@
-﻿using CoDodoApi.Entities;
+﻿using CoDodoApi.Database;
+using CoDodoApi.Database.Entities;
+using CoDodoApi.Entities;
 using CoDodoApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoDodoApi;
 
@@ -8,17 +11,19 @@ static class Endpoints
 {
     public static async
     Task<IResult> DeleteProcess([FromBody] DeleteProcessDTO dto,
-                                ProcessInMemoryStore store,
+                                ApplicationDbContext dbContext,
                                 TimeProvider provider,
                                 ILoggerFactory logger)
     {
         try
         {
-            Process process = dto.ToProcess(provider);
+            Process process = dto.ToProcess();
 
-            Process r = await store.Delete(process).ConfigureAwait(false);
+            dbContext.Processes.Remove(process);
+            
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return OkProcessDto(r);
+            return OkProcessDto(process);
         }
         catch (Exception ex)
         {
@@ -30,17 +35,19 @@ static class Endpoints
 
     public static async
     Task<IResult> CreateProcess(CreateProcessDTO dto,
-                                ProcessInMemoryStore store,
+        ApplicationDbContext dbContext,
                                 TimeProvider provider,
                                 ILoggerFactory logger)
     {
         try
         {
-            Process process = dto.ToProcess(provider);
+            Process process = dto.ToProcess();
 
-            Process r = await store.Add(process);
+            dbContext.Processes.Add(process);
+            
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return OkProcessDto(r);
+            return OkProcessDto(process);
         }
         catch (Exception ex)
         {
@@ -51,13 +58,13 @@ static class Endpoints
     }
 
     public static async
-    Task AllProcesses(ProcessInMemoryStore store,
+    Task AllProcesses(ApplicationDbContext dbContext,
                       ILoggerFactory logger,
                       HttpContext context)
     {
         try
         {
-            Process[] r = await store.GetAll().ConfigureAwait(false);
+            var r = await dbContext.Processes.Include(p => p.Opportunity).ToListAsync();
 
             context.Response.StatusCode = 200;
 
@@ -88,12 +95,11 @@ static class Endpoints
         return TypedResults.Ok(dtos);
     }
 
-    public static 
-    IResult ImportExcel(IFormFile file, ExcelImporter importer)
+    public static async Task<IResult> ImportExcel(IFormFile file, ExcelImporter importer)
     {
         try
         {
-            importer.Import(file);
+            await importer.Import(file);
 
             return Results.Ok();
         }
