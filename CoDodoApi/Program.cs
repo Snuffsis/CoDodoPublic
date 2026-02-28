@@ -17,7 +17,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseRouting();
 app.MapAllRoutes();
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();
