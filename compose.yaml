@@ -1,0 +1,65 @@
+﻿services:
+  cododo.api:
+    image: ${DOCKER_REGISTRY-}cododoapi
+    container_name: CododoAPI
+    depends_on:
+      cododo.db:
+        condition: service_healthy
+      cododo.seq:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: CoDodoApi/Dockerfile
+    ports: 
+      - "81:8080"
+    
+  cododo.db:
+    image: postgres:latest
+    container_name: cododo.db
+    environment:
+      - POSTGRES_DB=cododo
+      - POSTGRES_USER=cododoadmin
+      - POSTGRES_PASSWORD=cododoadmin
+      - PGDATA=/data/postgres
+    volumes:
+        - postgres:/data/postgres
+    ports:
+        - "5432:5432"
+    healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U cododoadmin -d cododo" ]
+        interval: 5s
+        timeout: 5s
+        retries: 10
+        start_period: 5s
+        
+  cododo.seq:
+    image: datalust/seq:latest
+    container_name: cododo.seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_NOAUTHENTICATION=true
+    ports:
+      - "5341:5341"
+      - "8081:80"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:80 || exit 1" ]
+      interval: 5s
+      retries: 12
+      start_period: 5s
+
+#  cofindertester:
+#    image: ${DOCKER_REGISTRY-}cofindertester
+#    container_name: CofinderTester
+#    depends_on:
+#      cododo.db:
+#        condition: service_healthy
+#      cododo.seq:
+#        condition: service_healthy
+#    build:
+#      context: .
+#      dockerfile: CoFinderTester/Dockerfile
+#    ports:
+#      - "80:8080"
+
+volumes:
+  postgres:
