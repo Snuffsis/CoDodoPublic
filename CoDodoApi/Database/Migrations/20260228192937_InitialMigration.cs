@@ -33,8 +33,8 @@ namespace CoDodoApi.Database.Migrations
                     name = table.Column<string>(type: "text", nullable: false),
                     opportunity_uri = table.Column<string>(type: "text", nullable: false),
                     status = table.Column<string>(type: "text", nullable: false),
-                    created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    updated_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    created_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

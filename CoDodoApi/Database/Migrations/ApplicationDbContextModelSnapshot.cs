@@ -22,7 +22,7 @@ namespace CoDodoApi.Database.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CoDodoApi.Entities.Opportunity", b =>
+            modelBuilder.Entity("CoDodoApi.Database.Entities.Opportunity", b =>
                 {
                     b.Property<string>("UriForAssignment")
                         .HasColumnType("text")
@@ -57,7 +57,7 @@ namespace CoDodoApi.Database.Migrations
                     b.ToTable("opportunities", (string)null);
                 });
 
-            modelBuilder.Entity("CoDodoApi.Entities.Process", b =>
+            modelBuilder.Entity("CoDodoApi.Database.Entities.Process", b =>
                 {
                     b.Property<string>("Name")
                         .HasColumnType("text")
@@ -67,7 +67,7 @@ namespace CoDodoApi.Database.Migrations
                         .HasColumnType("text")
                         .HasColumnName("opportunity_uri");
 
-                    b.Property<DateTimeOffset>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_date");
 
@@ -76,7 +76,7 @@ namespace CoDodoApi.Database.Migrations
                         .HasColumnType("text")
                         .HasColumnName("status");
 
-                    b.Property<DateTimeOffset>("UpdatedDate")
+                    b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_date");
 
@@ -89,9 +89,9 @@ namespace CoDodoApi.Database.Migrations
                     b.ToTable("processes", (string)null);
                 });
 
-            modelBuilder.Entity("CoDodoApi.Entities.Process", b =>
+            modelBuilder.Entity("CoDodoApi.Database.Entities.Process", b =>
                 {
-                    b.HasOne("CoDodoApi.Entities.Opportunity", "Opportunity")
+                    b.HasOne("CoDodoApi.Database.Entities.Opportunity", "Opportunity")
                         .WithMany()
                         .HasForeignKey("OpportunityUri")
                         .OnDelete(DeleteBehavior.Cascade)
