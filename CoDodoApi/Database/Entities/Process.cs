@@ -77,6 +77,7 @@ public class Process
     {
         return Status == "WON";
     }
+        
 }
 
 internal static class ProcessExtensions
