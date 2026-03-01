@@ -1,6 +1,5 @@
 ﻿using CoDodoApi.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace CoDodoApi.Database.Entities;
 

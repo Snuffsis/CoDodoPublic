@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 namespace CoDodoApi.Endpoints.Processes;
 
 /// <summary>
-/// Represents the GET endpoint for microsoft Products.
+/// Represents the GET endpoint for fetching processes by its key.
 /// </summary>
 public class GetById : IEndpoint
 {
     /// <summary>
-    /// Maps the GET endpoint for microsoft Products.
+    /// Maps the GET endpoint for fetching processes by its key.
     /// </summary>
     /// <param name="app">The endpoint route builder.</param>
     public void MapEndpoint(IEndpointRouteBuilder app)

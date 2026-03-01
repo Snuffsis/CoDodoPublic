@@ -9,7 +9,7 @@
         condition: service_healthy
     build:
       context: .
-      dockerfile: CoDodoApi/Dockerfile
+      dockerfile: src/CoDodoApi/Dockerfile
     ports: 
       - "81:8080"
     
@@ -57,7 +57,7 @@
 #        condition: service_healthy
 #    build:
 #      context: .
-#      dockerfile: CoFinderTester/Dockerfile
+#      dockerfile: src/CoFinderTester/Dockerfile
 #    ports:
 #      - "80:8080"
 
