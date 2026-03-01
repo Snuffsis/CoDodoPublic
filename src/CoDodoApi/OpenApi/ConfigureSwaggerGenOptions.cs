@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace CoDodoApi.OpenApi;
@@ -23,22 +23,9 @@ public class ConfigureSwaggerGenOptions : IConfigureNamedOptions<SwaggerGenOptio
             Scheme = "basic",
             Description = "Basic Authentication",
         });
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
         {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "BasicAuthentication",
-                        },
-                    Scheme = "basic",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                },
-                new List<string>()
-            }
+            [new OpenApiSecuritySchemeReference("BasicAuthentication", doc)] = []
         });
     }
 

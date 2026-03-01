@@ -1,5 +1,4 @@
 using CoDodoApi.Database;
-using CoDodoApi.Database.Entities;
 using CoDodoApi.Entities;
 
 namespace CoDodoApi.Endpoints.Processes;
