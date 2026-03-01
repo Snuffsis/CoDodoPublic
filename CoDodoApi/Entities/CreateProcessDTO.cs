@@ -2,8 +2,7 @@
 
 namespace CoDodoApi.Entities;
 
-public sealed
-class CreateProcessDTO
+public sealed class CreateProcessDTO
 {
     public string Name { get; set; } = "";
     public string UriForAssignment {get; set;} = "";
@@ -18,8 +17,7 @@ class CreateProcessDTO
 
 public static class CreateProcessDtoExtensions
 {
-    public static
-    Process ToProcess(this CreateProcessDTO dto)
+    public static Process ToProcess(this CreateProcessDTO dto)
     {
         Opportunity o = Opportunity.Create(
             dto.UriForAssignment,
