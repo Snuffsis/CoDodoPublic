@@ -5,12 +5,12 @@ using CoDodoApi.Entities;
 namespace CoDodoApi.Endpoints.Processes;
 
 /// <summary>
-/// Represents the GET endpoint for microsoft Products.
+/// Represents the POST endpoint for creating a new process.
 /// </summary>
 public class Create : IEndpoint
 {
     /// <summary>
-    /// Maps the GET endpoint for microsoft Products.
+    /// Maps the POST endpoint for creating a new process.
     /// </summary>
     /// <param name="app">The endpoint route builder.</param>
     public void MapEndpoint(IEndpointRouteBuilder app)
