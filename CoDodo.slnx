@@ -1,13 +1,15 @@
 <Solution>
   <Folder Name="/Solution Items/">
-    <File Path=".editorconfig" />
-    <File Path=".gitattributes" />
-    <File Path=".gitignore" />
-    <File Path="compose.yaml" />
-    <File Path="README.md" />
+    <File Path=".editorconfig"/>
+    <File Path=".gitattributes"/>
+    <File Path=".gitignore"/>
+    <File Path="compose.yaml"/>
+    <File Path="README.md"/>
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/CoDodoApi/CoDodoApi.csproj" />
-    <Project Path="src/CoFinderTester/CoFinderTester.csproj" />
+    <Project Path="src/CoDodoApi/CoDodoApi.csproj"/>
+    <Project Path="src/CoFinderTester/CoFinderTester.csproj"/>
+    <Project Path="src/SharedKernel/SharedKernel.csproj"/>
   </Folder>
 </Solution>
+
