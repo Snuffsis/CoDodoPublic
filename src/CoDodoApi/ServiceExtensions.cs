@@ -4,6 +4,7 @@ using CoDodoApi.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using SharedKernel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -83,10 +84,7 @@ public static class ServiceExtensions
         IConfiguration configuration)
     {
         string? connectionString = configuration.GetConnectionString("Database");
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            throw new ArgumentException("Database connection string is missing", nameof(configuration));
-        }
+        Ensure.NotNullOrEmpty(connectionString);
 
         services.AddDbContext<ApplicationDbContext>(
             (sp, options) => options
