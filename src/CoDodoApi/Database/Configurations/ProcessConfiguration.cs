@@ -1,4 +1,4 @@
-using CoDodoApi.Database.Entities;
+using Domain.Processes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,9 +13,5 @@ public class ProcessConfiguration :IEntityTypeConfiguration<Process>
             p.Name,
             p.OpportunityUri
         });
-        builder.HasOne(p => p.Opportunity)
-            .WithMany()
-            .HasForeignKey(p => p.OpportunityUri)
-            .HasPrincipalKey(o => o.UriForAssignment);
     }
 }
