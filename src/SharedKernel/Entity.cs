@@ -6,8 +6,8 @@ public abstract class Entity
 
     protected Entity(
         Guid id,
-        DateTimeOffset createdAt,
-        DateTimeOffset updatedAt)
+        DateTime createdAt,
+        DateTime updatedAt)
     {
         Id = id;
         CreatedAt = createdAt;
@@ -20,9 +20,9 @@ public abstract class Entity
 
     public Guid Id { get; init; }
 
-    public DateTimeOffset CreatedAt { get; private set; } = DateTimeOffset.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public List<IDomainEvent> DomainEvents => [.. _domainEvents];
 
