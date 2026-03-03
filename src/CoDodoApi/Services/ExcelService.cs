@@ -1,5 +1,6 @@
 using ClosedXML.Excel;
-using CoDodoApi.Database.Entities;
+using Domain.Opportunities;
+using Domain.Processes;
 
 namespace CoDodoApi.Services;
 
@@ -53,7 +54,7 @@ public class ExcelService
         string name = rName.GetValue<string>();
         string capability = rCapability.GetValue<string>();
         string company = rOpportunity.GetValue<string>();
-        string status = rStatus.GetValue<string>();
+        Status status = ParseStatus(rStatus, row.RowNumber());
         string salesLead = rSalesLead.GetValue<string>();
         rHourlyRate.TryGetValue(out int hourlyRate);
         string lu = rLastUpdate.GetValue<string>();
@@ -64,19 +65,37 @@ public class ExcelService
 
         string uri = Guid.NewGuid().ToString();
 
-        Opportunity opportunity = Opportunity.Create(
-            uri,
-            company,
-            capability,
-            salesLead,
-            hourlyRate);
+        Opportunity opportunity = new Opportunity()
+        {
+          Id =  Guid.NewGuid(),
+          UriForAssignment = uri,
+          Company = company,
+          Capability = capability,
+          NameOfSalesLead = salesLead,
+          HourlyRateInSek = hourlyRate,
+          CreatedAt = createdDate,
+          UpdatedAt = updatedDate,
+        };
 
-        return Process.Create(
-            name,
-            opportunity,
-            opportunity.UriForAssignment,
-            status,
-            createdDate,
-            updatedDate);
+        return new Process
+        {
+          Id = Guid.NewGuid(),
+          Name = name,
+          OpportunityUri = uri,
+          Opportunity =  opportunity,
+          Status = status,
+          CreatedAt = createdDate,
+          UpdatedAt = updatedDate,
+        };
+    }
+    
+    private static Status ParseStatus(IXLCell cell, int rowNumber)
+    {
+      var text = cell.GetValue<string>()?.Trim();
+
+      if (string.IsNullOrWhiteSpace(text))
+        throw new Exception($"Status is empty in row {rowNumber}");
+
+      return !Enum.TryParse<Status>(text, true, out var status) ? throw new Exception($"Invalid status '{text}' in row {rowNumber}") : status;
     }
 }
