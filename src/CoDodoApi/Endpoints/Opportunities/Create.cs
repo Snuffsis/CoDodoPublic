@@ -1,25 +1,26 @@
 using Application.Abstractions.Messaging;
+using Application.Opportunities.Create;
 using Application.Processes.Create;
 using CoDodoApi.Extensions;
 using CoDodoApi.Infrastructure;
 using SharedKernel;
 
-namespace CoDodoApi.Endpoints.Processes;
+namespace CoDodoApi.Endpoints.Opportunities;
 
 /// <summary>
-/// Represents the POST endpoint for creating a new process.
+/// Represents the POST endpoint for creating a new opportunity.
 /// </summary>
 public class Create : IEndpoint
 {
   /// <summary>
-  /// Maps the POST endpoint for creating a new process.
+  /// Maps the POST endpoint for creating a new opportunity.
   /// </summary>
   /// <param name="app">The endpoint route builder.</param>
   public void MapEndpoint(IEndpointRouteBuilder app)
   {
-    app.MapPost("processes", async (
-        CreateProcessCommand request,
-        ICommandHandler<CreateProcessCommand, Guid> handler,
+    app.MapPost("opportunities", async (
+        CreateOpportunityCommand request,
+        ICommandHandler<CreateOpportunityCommand, Guid> handler,
         CancellationToken cancellationToken
       ) =>
       {
@@ -29,7 +30,7 @@ public class Create : IEndpoint
       })
       .RequireAuthorization()
       .WithOpenApi()
-      .WithName("Create a Process")
-      .WithTags("Processes");
+      .WithName(Names.Opportunities.Create)
+      .WithTags(Tags.Opportunities);
   }
 }

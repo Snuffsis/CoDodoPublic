@@ -1,27 +1,55 @@
+using Application;
 using CoDodoApi;
 using CoDodoApi.Extensions;
+using CoDodoApi.Infrastructure;
 using CoDodoApi.Services;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Serilog;
 using System.Reflection;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.AddConfiguredSerilog();
 
-IServiceCollection services = builder.Services;
-services.AddEndpoints(Assembly.GetExecutingAssembly());
-services.AddDatabase(builder.Configuration);
-services.AddSwagger();
-services.AddSingleton(TimeProvider.System);
-services.AddScoped<ExcelService>();
-services.AddConfiguredAuthentication();
-services.AddAuthorization();
+builder.Host.UseSerilog((context, loggerConfig) =>
+{
+  loggerConfig.ReadFrom.Configuration(context.Configuration);
+  loggerConfig.Enrich.FromLogContext();
+  loggerConfig.Enrich.WithProperty("Application", "CoDodoApi");
+});
+
+builder.Services
+  .AddApplication()
+  .AddPresentation()
+  .AddInfrastructure(builder.Configuration);
+
+builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
+
+builder.Services.AddScoped<ExcelService>();
+builder.Services.AddConfiguredAuthentication();
+builder.Services.AddAuthorization();
 
 WebApplication app = builder.Build();
+
 app.MapEndpoints();
+
 app.ApplyMigrations();
+
 app.UseSwagger();
 app.UseSwaggerUI();
-app.UseRouting();
+
+app.MapHealthChecks("health", new HealthCheckOptions() 
+{
+  ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+app.UseRequestContextLogging();
+
+app.UseSerilogRequestLogging();
+
+app.UseExceptionHandler();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.Run();

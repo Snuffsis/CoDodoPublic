@@ -1,7 +1,9 @@
 using Application.Abstractions.Messaging;
-using Application.Processes.GetById;
+using Application.Processes.GetByKey;
+using CoDodoApi.Database;
 using CoDodoApi.Extensions;
 using CoDodoApi.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace CoDodoApi.Endpoints.Processes;
@@ -9,7 +11,7 @@ namespace CoDodoApi.Endpoints.Processes;
 /// <summary>
 /// Represents the GET endpoint for fetching processes by its key.
 /// </summary>
-public class GetById : IEndpoint
+public class GetByKey : IEndpoint
 {
     /// <summary>
     /// Maps the GET endpoint for fetching processes by its key.
@@ -17,13 +19,14 @@ public class GetById : IEndpoint
     /// <param name="app">The endpoint route builder.</param>
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("processes/{id:guid}", async (
-            Guid id,
-            IQueryHandler<GetProcessByIdQuery, ProcessResponse> handler,
+        app.MapGet("processes/getByKey", async (
+            string name,
+            string uriForAssignment,
+            IQueryHandler<GetProcessByKeyQuery, ProcessResponse> handler,
             CancellationToken cancellationToken
             ) =>
             {
-              var query = new GetProcessByIdQuery(id);
+              var query = new GetProcessByKeyQuery(name, uriForAssignment);
               
               Result<ProcessResponse> result = await handler.Handle(query, cancellationToken);
               
@@ -31,7 +34,7 @@ public class GetById : IEndpoint
             })
             .RequireAuthorization()
             .WithOpenApi()
-            .WithName(Names.Processes.GetById)
+            .WithName(Names.Processes.GetByKey)
             .WithTags(Tags.Processes);
     }
 }
