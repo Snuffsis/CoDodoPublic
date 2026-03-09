@@ -26,6 +26,7 @@ public class Create : IEndpoint
                 try
                 {
                     dbContext.Processes.AddRange(processes);
+                  
                     await dbContext.SaveChangesAsync();
                 }
                 catch (Exception ex)

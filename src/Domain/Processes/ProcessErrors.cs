@@ -16,7 +16,7 @@ public static class ProcessErrors
     "Processes.KeyNotUnique",
     "The specified key was not unique");
 
-  public static readonly Error NotFoundByKey = Error.NotFound(
+  public static Error NotFoundByKey(string name, string opportunityId) => Error.NotFound(
     "Processes.NotFoundByKey",
-    "The process with the specified key was not found");
+    $"The process with the specified key '{name}:{opportunityId}' was not found");
 }

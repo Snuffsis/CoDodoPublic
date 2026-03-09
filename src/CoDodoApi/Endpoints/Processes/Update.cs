@@ -1,5 +1,8 @@
+using Application.Abstractions.Messaging;
+using Application.Processes.Update;
 using CoDodoApi.Database;
 using CoDodoApi.Entities;
+using Domain.Processes;
 
 namespace CoDodoApi.Endpoints.Processes;
 
@@ -15,33 +18,12 @@ public class Update : IEndpoint
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPut("processes", async (
-                UpdateProcessStatusDTO dto,
-                ILogger<Update> logger,
-                ApplicationDbContext dbContext
-            ) =>
+            string name,
+            string uriForAssignment,
+            Status status,
+            ICommandHandler<UpdateProcessCommand> handler) =>
             {
-                try
-                {
-                    var process = await dbContext.Processes.FindAsync(dto.Name, dto.UriForAssignment);
-                    if (process == null)
-                    {
-                        return Results.NotFound();
-                    }
-                    
-                    process.Status = dto.Status;
-                    process.UpdatedDate = DateTime.UtcNow;
-            
-                    dbContext.Processes.Update(process);
-
-                    await dbContext.SaveChangesAsync();
-
-                    return Results.Ok(process);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Exception thrown while trying to create a process");
-                    return Results.BadRequest();
-                }
+              var command = new UpdateProcessCommand(name, uriForAssignment, status);
             })
             .RequireAuthorization()
             .WithOpenApi()

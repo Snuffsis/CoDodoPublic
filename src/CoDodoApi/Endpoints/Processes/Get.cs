@@ -1,5 +1,11 @@
+using Application.Abstractions.Messaging;
+using Application.Processes.Get;
 using CoDodoApi.Database;
+using CoDodoApi.Extensions;
+using CoDodoApi.Infrastructure;
+using Domain.Processes;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace CoDodoApi.Endpoints.Processes;
 
@@ -8,32 +14,25 @@ namespace CoDodoApi.Endpoints.Processes;
 /// </summary>
 public class Get : IEndpoint
 {
-    /// <summary>
-    /// Maps the GET endpoint for processes.
-    /// </summary>
-    /// <param name="app">The endpoint route builder.</param>
-    public void MapEndpoint(IEndpointRouteBuilder app)
-    {
-        app.MapGet("processes", async (
-            ApplicationDbContext dbContext,
-            ILogger<Get> logger
-            ) =>
-        {
-            try
-            {
-                var r = await dbContext.Processes.Include(p => p.Opportunity).ToListAsync();
+  /// <summary>
+  /// Maps the GET endpoint for processes.
+  /// </summary>
+  /// <param name="app">The endpoint route builder.</param>
+  public void MapEndpoint(IEndpointRouteBuilder app)
+  {
+    app.MapGet("processes", async (
+        IQueryHandler<GetProcessesQuery, List<ProcessResponse>> handler,
+        CancellationToken cancellationToken) =>
+      {
+        var query = new GetProcessesQuery();
+        
+        Result<List<ProcessResponse>> result = await handler.Handle(query, cancellationToken);
 
-                return Results.Ok(r);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Exception in {Endpoint}: {ExMessage}", "GetById", ex.Message);
-                return Results.BadRequest();
-            }
-        })
-            .RequireAuthorization()
-            .WithOpenApi()
-            .WithName(Names.Processes.Get)
-            .WithTags(Tags.Processes);
-    }
+        return result.Match(Results.Ok, CustomResults.Problem);
+      })
+      .RequireAuthorization()
+      .WithOpenApi()
+      .WithName(Names.Processes.Get)
+      .WithTags(Tags.Processes);
+  }
 }

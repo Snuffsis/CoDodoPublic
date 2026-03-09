@@ -1,21 +1,21 @@
 using Application.Abstractions.Messaging;
-using Application.Processes.Delete;
+using Application.Opportunities.Delete;
 using CoDodoApi.Extensions;
 using CoDodoApi.Infrastructure;
 using SharedKernel;
 
-namespace CoDodoApi.Endpoints.Processes;
+namespace CoDodoApi.Endpoints.Opportunities;
 
 public class Delete : IEndpoint
 {
   public void MapEndpoint(IEndpointRouteBuilder app)
   {
-    app.MapDelete("process/{id:guid}", async (
+    app.MapDelete("opportunity/{id:guid}", async (
         Guid id,
-        ICommandHandler<DeleteProcessCommand> handler,
+        ICommandHandler<DeleteOpportunityCommand> handler,
         CancellationToken cancellationToken) =>
       {
-        var command = new DeleteProcessCommand(id);
+        var command = new DeleteOpportunityCommand(id);
         
         Result result = await handler.Handle(command, cancellationToken);
 
@@ -23,7 +23,7 @@ public class Delete : IEndpoint
       })
       .RequireAuthorization()
       .WithOpenApi()
-      .WithName(Names.Processes.Delete)
-      .WithTags(Tags.Processes);
+      .WithName(Names.Opportunities.Delete)
+      .WithTags(Tags.Opportunities);
   }
 }
