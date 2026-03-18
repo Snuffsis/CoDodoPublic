@@ -1,0 +1,92 @@
+@model CoDodoWeb.Models.ProcessOverviewViewModel
+
+<div class="container-fluid py-4">
+  <div class="row g-0">
+    <aside class="col-12 col-lg-3 col-xl-2 pe-lg-4 mb-3 mb-lg-0">
+      <partial name="_Sidebar" />
+    </aside>
+
+    <section class="col-12 col-lg-9 col-xl-10">
+      <h1 class="mb-3">Process overview</h1>
+
+      @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+      {
+        <div class="alert alert-warning" role="alert">
+          @Model.ErrorMessage
+        </div>
+      }
+
+      <form asp-controller="CoDodo" asp-action="Processes" method="get" class="row g-2 mb-3">
+        <div class="col-md-3">
+          <label for="statusFilter" class="form-label">Status</label>
+          <select id="statusFilter" name="status" class="form-select form-select-sm">
+            <option value="">All statuses</option>
+            @foreach (var status in Enum.GetValues<CoDodoWeb.Models.ProcessStatus>())
+            {
+              if (Model.StatusFilter == status)
+              {
+                <option value="@status" selected>@status</option>
+              }
+              else
+              {
+                <option value="@status">@status</option>
+              }
+            }
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="personNameFilter" class="form-label">Person name</label>
+          <input id="personNameFilter"
+                 name="personName"
+                 type="text"
+                 class="form-control form-control-sm"
+                 value="@Model.PersonNameFilter"
+                 placeholder="Search sales lead name" />
+        </div>
+        <div class="col-md-5 d-flex align-items-end gap-2">
+          <button type="submit" class="btn btn-sm btn-primary">Apply filters</button>
+          <a class="btn btn-sm btn-outline-secondary"
+             asp-controller="CoDodo"
+             asp-action="Processes">
+            Reset
+          </a>
+        </div>
+      </form>
+
+      <div class="table-responsive">
+        <table class="table table-striped table-sm">
+          <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Opportunity</th>
+            <th>URI For Assignment</th>
+            <th>Updated at</th>
+          </tr>
+          </thead>
+          <tbody>
+          @if (Model.Processes.Count == 0)
+          {
+            <tr>
+              <td colspan="5" class="text-muted">No processes match the current filter.</td>
+            </tr>
+          }
+          else
+          {
+            @foreach (var process in Model.Processes)
+            {
+              <tr>
+                <td>@process.Name</td>
+                <td>@process.Status</td>
+                <td>@(process.Opportunity?.Company ?? "-")</td>
+                <td>@process.UriForAssignment</td>
+                <td>@process.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+              </tr>
+            }
+          }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

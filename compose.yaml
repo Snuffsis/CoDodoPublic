@@ -1,4 +1,4 @@
-services:
+﻿services:
   cododo.api:
     image: ${DOCKER_REGISTRY-}cododoapi
     container_name: cododo.api
@@ -12,6 +12,20 @@ services:
       dockerfile: src/CoDodoApi/Dockerfile
     ports: 
       - "81:8080"
+        
+  cododo.web:
+    image: ${DOCKER_REGISTRY-}cododoweb
+    container_name: cododo.web
+    depends_on:
+      cododo.db:
+        condition: service_healthy
+      cododo.seq:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: src/CoDodoWeb/Dockerfile
+    ports:
+      - "80:8080"
     
   cododo.db:
     image: postgres:latest
