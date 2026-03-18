@@ -22,6 +22,8 @@ internal sealed class GetProcessesQueryHandler(
         Name =  p.Name,
         UriForAssignment = p.OpportunityUri,
         Status = p.Status,
+        CreatedAt = p.CreatedAt,
+        UpdatedAt = p.UpdatedAt,
         Opportunity = new OpportunityResponse
         {
           Id = p.Opportunity.Id,
@@ -32,15 +34,37 @@ internal sealed class GetProcessesQueryHandler(
           HourlyRateInSek = p.Opportunity.HourlyRateInSek,
           CreatedAt = p.Opportunity.CreatedAt,
           UpdatedAt = p.Opportunity.UpdatedAt,
-          DaysSinceUpdate = DaysSince(p.Opportunity.UpdatedAt),
-          DaysSinceCreation = DaysSince(p.Opportunity.CreatedAt),
         },
-        CreatedAt = p.CreatedAt,
-        UpdatedAt = p.UpdatedAt,
-        DaysSinceUpdate = DaysSince(p.UpdatedAt),
-        DaysSinceCreation = DaysSince(p.CreatedAt)
       })
       .ToListAsync(cancellationToken);
+    
+    processes = processes
+      .Select(p => new ProcessResponse
+      {
+        Id = p.Id,
+        Name = p.Name,
+        UriForAssignment = p.UriForAssignment,
+        Status = p.Status,
+        CreatedAt = p.CreatedAt,
+        UpdatedAt = p.UpdatedAt,
+        DaysSinceCreation = DaysSince(p.CreatedAt),
+        DaysSinceUpdate = DaysSince(p.UpdatedAt),
+
+        Opportunity = new OpportunityResponse
+        {
+          Id = p.Opportunity.Id,
+          UriForAssignment = p.Opportunity.UriForAssignment,
+          Company = p.Opportunity.Company,
+          Capability = p.Opportunity.Capability,
+          NameOfSalesLead = p.Opportunity.NameOfSalesLead,
+          HourlyRateInSek = p.Opportunity.HourlyRateInSek,
+          CreatedAt = p.Opportunity.CreatedAt,
+          UpdatedAt = p.Opportunity.UpdatedAt,
+          DaysSinceCreation = DaysSince(p.Opportunity.CreatedAt),
+          DaysSinceUpdate = DaysSince(p.Opportunity.UpdatedAt),
+        }
+      })
+      .ToList();
 
     return processes;
   }

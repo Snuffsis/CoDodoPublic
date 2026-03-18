@@ -29,8 +29,8 @@ builder.Services.AddConfiguredAuthentication();
 builder.Services.AddAuthorization();
 
 WebApplication app = builder.Build();
-
-app.MapEndpoints();
+var api = app.MapGroup("/api");
+app.MapEndpoints(api);
 
 app.ApplyMigrations();
 
