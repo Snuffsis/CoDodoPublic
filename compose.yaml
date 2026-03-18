@@ -1,7 +1,7 @@
-﻿services:
+services:
   cododo.api:
     image: ${DOCKER_REGISTRY-}cododoapi
-    container_name: CododoAPI
+    container_name: cododo.api
     depends_on:
       cododo.db:
         condition: service_healthy
@@ -46,20 +46,6 @@
       interval: 5s
       retries: 12
       start_period: 5s
-
-#  cofindertester:
-#    image: ${DOCKER_REGISTRY-}cofindertester
-#    container_name: CofinderTester
-#    depends_on:
-#      cododo.db:
-#        condition: service_healthy
-#      cododo.seq:
-#        condition: service_healthy
-#    build:
-#      context: .
-#      dockerfile: src/CoFinderTester/Dockerfile
-#    ports:
-#      - "80:8080"
 
 volumes:
   postgres:

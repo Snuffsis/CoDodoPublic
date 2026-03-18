@@ -2,7 +2,10 @@ using Application.Abstractions.Messaging;
 using Application.Processes.Update;
 using CoDodoApi.Database;
 using CoDodoApi.Entities;
+using CoDodoApi.Extensions;
+using CoDodoApi.Infrastructure;
 using Domain.Processes;
+using SharedKernel;
 
 namespace CoDodoApi.Endpoints.Processes;
 
@@ -21,9 +24,14 @@ public class Update : IEndpoint
             string name,
             string uriForAssignment,
             Status status,
-            ICommandHandler<UpdateProcessCommand> handler) =>
+            ICommandHandler<UpdateProcessCommand> handler,
+            CancellationToken cancellationToken) =>
             {
               var command = new UpdateProcessCommand(name, uriForAssignment, status);
+              
+              Result result = await handler.Handle(command, cancellationToken);
+
+              return result.Match(Results.NoContent, CustomResults.Problem);
             })
             .RequireAuthorization()
             .WithOpenApi()
