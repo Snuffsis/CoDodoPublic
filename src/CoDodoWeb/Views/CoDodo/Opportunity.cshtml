@@ -1,0 +1,106 @@
+@model CoDodoWeb.Models.OpportunityDetailsViewModel
+
+<div class="container-fluid py-4">
+  <div class="row g-0">
+    <aside class="col-12 col-lg-3 col-xl-2 pe-lg-4 mb-3 mb-lg-0">
+      <partial name="_Sidebar" />
+    </aside>
+
+    <section class="col-12 col-lg-9 col-xl-10">
+      <h1 class="mb-3">Opportunity details</h1>
+
+      @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+      {
+        <div class="alert alert-success" role="alert">
+          @Model.SuccessMessage
+        </div>
+      }
+
+      @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+      {
+        <div class="alert alert-warning" role="alert">
+          @Model.ErrorMessage
+        </div>
+      }
+
+      @if (Model.Opportunity is null)
+      {
+        <div class="alert alert-danger" role="alert">
+          Opportunity details could not be loaded.
+        </div>
+      }
+      else
+      {
+        <div class="card mb-4">
+          <div class="card-body">
+            <h2 class="h5 mb-3">@Model.Opportunity.Company</h2>
+            <div><strong>Capability:</strong> @Model.Opportunity.Capability</div>
+            <div><strong>Sales lead:</strong> @Model.Opportunity.NameOfSalesLead</div>
+            <div><strong>Hourly rate:</strong> @Model.Opportunity.HourlyRateInSek SEK/h</div>
+            <div><strong>Assignment URI:</strong> @Model.Opportunity.UriForAssignment</div>
+          </div>
+        </div>
+      }
+
+      <h2 class="h4">Processes</h2>
+      <div class="table-responsive">
+        <table class="table table-striped table-sm align-middle">
+          <thead>
+          <tr>
+            <th>Name</th>
+            <th>URI For Assignment</th>
+            <th>Current status</th>
+            <th>Updated at</th>
+            <th>Change status</th>
+          </tr>
+          </thead>
+          <tbody>
+          @if (Model.Processes.Count == 0)
+          {
+            <tr>
+              <td colspan="5" class="text-muted">No processes found for this opportunity.</td>
+            </tr>
+          }
+          else
+          {
+            @foreach (var process in Model.Processes)
+            {
+              <tr>
+                <td>@process.Name</td>
+                <td>@process.UriForAssignment</td>
+                <td>@process.Status</td>
+                <td>@process.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                  <form asp-controller="CoDodo"
+                        asp-action="UpdateProcessStatus"
+                        method="post"
+                        class="d-flex gap-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="OpportunityId" value="@(Model.Opportunity?.Id ?? Guid.Empty)" />
+                    <input type="hidden" name="Name" value="@process.Name" />
+                    <input type="hidden" name="UriForAssignment" value="@process.UriForAssignment" />
+                    <select name="Status" class="form-select form-select-sm">
+                      @foreach (var status in Enum.GetValues<CoDodoWeb.Models.ProcessStatus>())
+                      {
+                        if (status == process.Status)
+                        {
+                          <option value="@status" selected>@status</option>
+                        }
+                        else
+                        {
+                          <option value="@status">@status</option>
+                        }
+                      }
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                  </form>
+                </td>
+              </tr>
+            }
+          }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

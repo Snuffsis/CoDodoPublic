@@ -1,0 +1,66 @@
+@model CoDodoWeb.Models.CoDodoIndexViewModel
+
+<div class="container-fluid py-4">
+  <div class="row g-0">
+    <aside class="col-12 col-lg-3 col-xl-2 pe-lg-4 mb-3 mb-lg-0">
+      <partial name="_Sidebar" />
+    </aside>
+
+    <section class="col-12 col-lg-9 col-xl-10">
+      <h1 class="mb-4">Opportunities</h1>
+
+      @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+      {
+        <div class="alert alert-warning" role="alert">
+          @Model.ErrorMessage
+        </div>
+      }
+
+      <div class="table-responsive mb-4">
+        <table class="table table-striped table-sm">
+          <thead>
+          <tr>
+            <th>Company</th>
+            <th>Capability</th>
+            <th>Sales Lead</th>
+            <th>Rate (SEK/h)</th>
+            <th>URI For Assignment</th>
+            <th>Processes</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          @if (Model.Opportunities.Count == 0)
+          {
+            <tr>
+              <td colspan="7" class="text-muted">No opportunities found.</td>
+            </tr>
+          }
+          else
+          {
+            @foreach (var opportunity in Model.Opportunities)
+            {
+              <tr>
+                <td>@opportunity.Company</td>
+                <td>@opportunity.Capability</td>
+                <td>@opportunity.NameOfSalesLead</td>
+                <td>@opportunity.HourlyRateInSek</td>
+                <td>@opportunity.UriForAssignment</td>
+                <td>@Model.ProcessCountsByOpportunity.GetValueOrDefault(opportunity.Id, 0)</td>
+                <td>
+                  <a class="btn btn-sm btn-outline-primary"
+                     asp-controller="CoDodo"
+                     asp-action="Opportunity"
+                     asp-route-id="@opportunity.Id">
+                    View processes
+                  </a>
+                </td>
+              </tr>
+            }
+          }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
